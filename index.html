@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oxicorte Manager</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:system-ui,sans-serif;background:#f5f5f5;color:#111;}
+.hide{display:none!important;}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f5;}
+.login-box{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:2rem;width:360px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.login-logo{text-align:center;margin-bottom:1.5rem;}
+.login-logo h2{font-size:20px;font-weight:600;margin-top:8px;}
+.login-logo p{font-size:13px;color:#666;margin-top:4px;}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.field label{font-size:12px;color:#666;font-weight:500;}
+.field input,.field select,.field textarea{font-size:14px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;outline:none;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#555;}
+.field textarea{height:70px;resize:vertical;}
+.btn-primary{background:#111;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:500;}
+.btn-primary.full{width:100%;}
+.btn-primary:hover{background:#333;}
+.btn-secondary{background:none;border:1px solid #ddd;padding:8px 16px;border-radius:8px;font-size:14px;cursor:pointer;color:#111;}
+.btn-secondary:hover{background:#f5f5f5;}
+.btn-sm{padding:4px 10px;font-size:12px;border-radius:6px;cursor:pointer;border:1px solid #ddd;background:none;color:#111;}
+.btn-sm:hover{background:#f5f5f5;}
+.btn-danger{color:#a32d2d;border-color:#f7c1c1;}
+.err{font-size:12px;color:#a32d2d;margin-top:6px;text-align:center;}
+#app-screen{display:none;min-height:100vh;background:#f5f5f5;}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 24px;background:#fff;border-bottom:1px solid #e5e5e5;}
+.topbar h1{font-size:16px;font-weight:600;}
+.user-badge{font-size:12px;background:#f0f0f0;padding:3px 10px;border-radius:99px;color:#555;}
+.main{padding:24px;}
+.tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid #e5e5e5;}
+.tab{padding:8px 16px;font-size:14px;cursor:pointer;border:none;background:none;color:#666;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:#111;border-bottom-color:#111;font-weight:500;}
+.section{display:none;}
+.section.active{display:block;}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.section-title{font-size:15px;font-weight:600;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat{background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:1rem;}
+.stat-label{font-size:12px;color:#666;margin-bottom:4px;}
+.stat-value{font-size:24px;font-weight:600;}
+.badge{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;}
+.badge-Pendente{background:#faeeda;color:#633806;}
+.badge-andamento{background:#e6f1fb;color:#0c447c;}
+.badge-Concluída{background:#eaf3de;color:#27500a;}
+.badge-Cancelada{background:#fcebeb;color:#791f1f;}
+table{width:100%;font-size:13px;border-collapse:collapse;}
+th{text-align:left;padding:8px 10px;color:#666;font-weight:500;border-bottom:1px solid #e5e5e5;}
+td{padding:10px;border-bottom:1px solid #f0f0f0;color:#111;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#fafafa;}
+.empty{text-align:center;padding:2rem;color:#888;font-size:14px;}
+.search-row{display:flex;gap:8px;margin-bottom:1rem;}
+.search-row input{flex:1;font-size:14px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;outline:none;}
+.search-row select{font-size:14px;padding:8px 12px;border:1px solid #ddd;border-radius:8px;width:180px;outline:none;}
+.actions{display:flex;gap:6px;align-items:center;}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:1.5rem;width:580px;max-width:96vw;max-height:88vh;overflow-y:auto;box-shadow:0 4px 24px rgba(0,0,0,0.15);}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
+.modal-title{font-size:15px;font-weight:600;}
+.close-btn{background:none;border:none;cursor:pointer;color:#888;font-size:22px;padding:0;line-height:1;}
+.upload-area{border:2px dashed #ddd;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;color:#888;font-size:13px;margin-bottom:8px;}
+.upload-area:hover{background:#fafafa;}
+.file-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.file-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f5f5f5;border-radius:8px;font-size:12px;}
+.fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-thumb{width:36px;height:36px;object-fit:cover;border-radius:4px;}
+.anexos-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.anexo-thumb{width:48px;height:48px;border-radius:6px;overflow:hidden;border:1px solid #e5e5e5;cursor:pointer;}
+.anexo-thumb img{width:100%;height:100%;object-fit:cover;}
+.anexo-pdf{width:48px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f5f5f5;border-radius:6px;border:1px solid #e5e5e5;font-size:10px;color:#888;cursor:pointer;gap:2px;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:#555;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-bar{font-size:12px;color:#888;}
+.role-admin{background:#eeedfe;color:#3c3489;}
+.role-operador{background:#e1f5ee;color:#085041;}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:#111;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+@media(max-width:600px){.stats{grid-template-columns:1fr 1fr;}.row{grid-template-columns:1fr;}.row3{grid-template-columns:1fr;}.main{padding:12px;}}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <i class="ti ti-cut" style="font-size:36px;"></i>
+      <h2>Oxicorte Manager</h2>
+      <p>Sistema de gestão em nuvem</p>
+    </div>
+    <div class="field"><label>Usuário</label><input id="login-user" type="text" placeholder="seu usuário"></div>
+    <div class="field"><label>Senha</label><input id="login-pass" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div id="login-err" class="err hide"></div>
+    <br>
+    <button class="btn-primary full" onclick="doLogin()"><span id="login-btn-txt">Entrar</span></button>
+  </div>
+</div>
+
+<div id="app-screen">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <i class="ti ti-cut" style="font-size:22px;"></i>
+      <h1>Oxicorte Manager</h1>
+      <span class="user-badge" id="user-badge"></span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span id="sync-bar" class="sync-bar"></span>
+      <button class="btn-secondary" style="font-size:13px;padding:6px 12px;" onclick="doLogout()"><i class="ti ti-logout"></i> Sair</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('dashboard')"><i class="ti ti-layout-dashboard"></i> Painel</button>
+      <button class="tab" onclick="showTab('clientes')"><i class="ti ti-users"></i> Clientes</button>
+      <button class="tab" onclick="showTab('os')"><i class="ti ti-clipboard-list"></i> Ordens de Serviço</button>
+      <button class="tab admin-only hide" onclick="showTab('usuarios')"><i class="ti ti-shield"></i> Usuários</button>
+    </div>
+
+    <div id="tab-dashboard" class="section active">
+      <div class="stats" id="stats-cards"></div>
+      <div class="card">
+        <div class="header-row"><span class="section-title">Últimas ordens</span><button class="btn-secondary" style="font-size:13px;" onclick="showTab('os')">Ver todas</button></div>
+        <div style="overflow-x:auto;"><table><thead><tr><th>Nº OS</th><th>Cliente</th><th>Descrição</th><th>Data</th><th>Status</th></tr></thead><tbody id="dashboard-table"></tbody></table></div>
+      </div>
+    </div>
+
+    <div id="tab-clientes" class="section">
+      <div class="header-row"><span class="section-title">Clientes</span><button class="btn-primary" onclick="openModal('modal-cliente')"><i class="ti ti-plus"></i> Novo cliente</button></div>
+      <div class="search-row"><input type="text" id="busca-cliente" placeholder="Buscar cliente..." oninput="renderClientes()"></div>
+      <div class="card" style="padding:0;"><div style="overflow-x:auto;"><table><thead><tr><th>Nome / Empresa</th><th>Telefone</th><th>Cidade</th><th>OS</th><th></th></tr></thead><tbody id="tabela-clientes"></tbody></table></div></div>
+    </div>
+
+    <div id="tab-os" class="section">
+      <div class="header-row"><span class="section-title">Ordens de Serviço</span><button class="btn-primary" onclick="abrirNovaOS()"><i class="ti ti-plus"></i> Nova OS</button></div>
+      <div class="search-row">
+        <input type="text" id="busca-os" placeholder="Buscar OS, cliente..." oninput="renderOS()">
+        <select id="filtro-status" onchange="renderOS()"><option value="">Todos os status</option><option>Pendente</option><option>Em andamento</option><option>Concluída</option><option>Cancelada</option></select>
+      </div>
+      <div class="card" style="padding:0;"><div style="overflow-x:auto;"><table><thead><tr><th>Nº OS</th><th>Cliente</th><th>Descrição</th><th>Data</th><th>Valor</th><th>Anexos</th><th>Status</th><th></th></tr></thead><tbody id="tabela-os"></tbody></table></div></div>
+    </div>
+
+    <div id="tab-usuarios" class="section">
+      <div class="header-row"><span class="section-title">Usuários</span><button class="btn-primary" onclick="openModal('modal-usuario')"><i class="ti ti-plus"></i> Novo usuário</button></div>
+      <div class="card" style="padding:0;"><div style="overflow-x:auto;"><table><thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th></th></tr></thead><tbody id="tabela-usuarios"></tbody></table></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CLIENTE -->
+<div class="modal-bg" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="mc-title">Novo cliente</span><button class="close-btn" onclick="closeModal('modal-cliente')">×</button></div>
+    <div class="row"><div class="field"><label>Nome / Empresa *</label><input id="c-nome" type="text"></div><div class="field"><label>Contato</label><input id="c-contato" type="text"></div></div>
+    <div class="row"><div class="field"><label>Telefone</label><input id="c-tel" type="text"></div><div class="field"><label>E-mail</label><input id="c-email" type="text"></div></div>
+    <div class="row"><div class="field"><label>Cidade</label><input id="c-cidade" type="text"></div><div class="field"><label>CNPJ / CPF</label><input id="c-doc" type="text"></div></div>
+    <div class="field" style="margin-bottom:1rem;"><label>Observações</label><textarea id="c-obs"></textarea></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn-secondary" onclick="closeModal('modal-cliente')">Cancelar</button><button class="btn-primary" onclick="salvarCliente()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL OS -->
+<div class="modal-bg" id="modal-os">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="mos-title">Nova ordem de serviço</span><button class="close-btn" onclick="closeModal('modal-os')">×</button></div>
+    <div class="row"><div class="field"><label>Cliente *</label><select id="os-cliente"><option value="">Selecione...</option></select></div><div class="field"><label>Data *</label><input id="os-data" type="date"></div></div>
+    <div class="field" style="margin-bottom:12px;"><label>Descrição do serviço *</label><textarea id="os-desc"></textarea></div>
+    <div class="row3"><div class="field"><label>Material</label><input id="os-material" type="text"></div><div class="field"><label>Espessura</label><input id="os-esp" type="text"></div><div class="field"><label>Quantidade</label><input id="os-qtd" type="text"></div></div>
+    <div class="row"><div class="field"><label>Valor (R$)</label><input id="os-valor" type="number" min="0" step="0.01"></div><div class="field"><label>Status</label><select id="os-status"><option>Pendente</option><option>Em andamento</option><option>Concluída</option><option>Cancelada</option></select></div></div>
+    <div class="field" style="margin-bottom:12px;"><label>Observações</label><textarea id="os-obs"></textarea></div>
+    <div style="margin-bottom:1rem;">
+      <label style="font-size:12px;color:#666;display:block;margin-bottom:6px;font-weight:500;">Desenhos / Arquivos</label>
+      <div class="upload-area" onclick="document.getElementById('file-input').click()"><i class="ti ti-upload" style="font-size:22px;"></i><br>Clique para anexar imagens ou PDFs de desenhos</div>
+      <input type="file" id="file-input" accept="image/*,.pdf" multiple style="display:none;" onchange="handleFiles(event)">
+      <div id="file-list" class="file-list"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;"><button class="btn-secondary" onclick="closeModal('modal-os')">Cancelar</button><button class="btn-primary" id="btn-salvar-os" onclick="salvarOS()">Salvar OS</button></div>
+  </div>
+</div>
+
+<!-- MODAL USUÁRIO -->
+<div class="modal-bg" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="mu-title">Novo usuário</span><button class="close-btn" onclick="closeModal('modal-usuario')">×</button></div>
+    <div class="row"><div class="field"><label>Nome completo *</label><input id="u-nome" type="text"></div><div class="field"><label>Usuário (login) *</label><input id="u-user" type="text"></div></div>
+    <div class="row"><div class="field"><label>Senha *</label><input id="u-pass" type="password"></div><div class="field"><label>Perfil</label><select id="u-role"><option value="operador">Operador</option><option value="admin">Administrador</option></select></div></div>
+    <div id="u-err" class="err hide"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;"><button class="btn-secondary" onclick="closeModal('modal-usuario')">Cancelar</button><button class="btn-primary" onclick="salvarUsuario()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL ANEXO -->
+<div class="modal-bg" id="modal-anexo">
+  <div class="modal" style="max-width:700px;text-align:center;">
+    <div class="modal-header"><span class="modal-title" id="anexo-title">Visualizar</span><button class="close-btn" onclick="closeModal('modal-anexo')">×</button></div>
+    <img id="anexo-img" src="" style="max-width:100%;border-radius:8px;display:none;">
+    <p id="anexo-pdf-msg" style="display:none;font-size:14px;color:#888;padding:2rem;">Arquivo PDF — clique abaixo para baixar</p>
+    <a id="anexo-dl" href="#" download style="display:block;margin-top:1rem;font-size:13px;color:#555;" target="_blank"><i class="ti ti-download"></i> Baixar arquivo</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://expbqvkvupwvkzzccizx.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4cGJxdmt2dXB3dmt6emNjaXp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NjgyNDAsImV4cCI6MjA5NjU0NDI0MH0.R01a0RGYfLeGQqH74TRssDYaCu1OrHR_u_FSlyR-ONo';
+
+const api = async (method, path, body) => {
+  const opts = { method, headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' } };
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(`${SB_URL}/rest/v1/${path}`, opts);
+  if(!r.ok){ const e = await r.text(); throw new Error(e); }
+  const t = await r.text();
+  return t ? JSON.parse(t) : [];
+};
+const sbGet = p => api('GET', p);
+const sbPost = (p,b) => api('POST', p, b);
+const sbPatch = (p,b) => api('PATCH', p, b);
+const sbDel = p => api('DELETE', p);
+
+let currentUser=null, clientes=[], ordens=[], usuarios=[], pendingFiles=[];
+let editClienteId=null, editOsId=null, editUserId=null;
+
+function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2500); }
+function setSyncBar(msg,spin=false){ document.getElementById('sync-bar').innerHTML=spin?`<span class="spinner"></span>${msg}`:msg; }
+function v(id){ const el=document.getElementById(id); return el?el.value:''; }
+function badgeClass(s){ if(s==='Pendente') return 'badge badge-Pendente'; if(s==='Em andamento') return 'badge badge-andamento'; if(s==='Concluída') return 'badge badge-Concluída'; return 'badge badge-Cancelada'; }
+
+async function doLogin(){
+  const user=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-err');
+  document.getElementById('login-btn-txt').innerHTML='<span class="spinner"></span>Entrando...';
+  try {
+    const rows=await sbGet(`usuarios?user_login=eq.${encodeURIComponent(user)}&senha=eq.${encodeURIComponent(pass)}&select=*`);
+    if(!rows.length){ err.textContent='Usuário ou senha incorretos.'; err.classList.remove('hide'); document.getElementById('login-btn-txt').textContent='Entrar'; return; }
+    err.classList.add('hide');
+    currentUser=rows[0];
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    document.getElementById('user-badge').textContent=`${currentUser.nome} · ${currentUser.role==='admin'?'Admin':'Operador'}`;
+    if(currentUser.role==='admin') document.querySelectorAll('.admin-only').forEach(el=>el.classList.remove('hide'));
+    await loadAll(); showTab('dashboard');
+  } catch(e){ err.textContent='Erro ao conectar: '+e.message; err.classList.remove('hide'); }
+  document.getElementById('login-btn-txt').textContent='Entrar';
+}
+function doLogout(){
+  currentUser=null; clientes=[]; ordens=[]; usuarios=[];
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+async function loadAll(){
+  setSyncBar('Carregando...', true);
+  try {
+    [clientes,ordens,usuarios]=await Promise.all([sbGet('clientes?select=*&order=nome'),sbGet('ordens?select=*&order=num.desc'),sbGet('usuarios?select=*')]);
+    setSyncBar('Sincronizado ✓'); setTimeout(()=>setSyncBar(''),3000);
+  } catch(e){ setSyncBar('Erro: '+e.message); }
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(id==='modal-cliente'){ editClienteId=null; ['c-nome','c-contato','c-tel','c-email','c-cidade','c-doc','c-obs'].forEach(x=>document.getElementById(x).value=''); document.getElementById('mc-title').textContent='Novo cliente'; }
+  if(id==='modal-os'){ editOsId=null; pendingFiles=[]; ['os-cliente','os-data','os-desc','os-material','os-esp','os-qtd','os-valor','os-obs'].forEach(x=>document.getElementById(x).value=''); document.getElementById('os-status').value='Pendente'; document.getElementById('file-list').innerHTML=''; document.getElementById('mos-title').textContent='Nova ordem de serviço'; }
+  if(id==='modal-usuario'){ editUserId=null; ['u-nome','u-user','u-pass'].forEach(x=>document.getElementById(x).value=''); document.getElementById('u-role').value='operador'; document.getElementById('u-err').classList.add('hide'); document.getElementById('mu-title').textContent='Novo usuário'; }
+}
+function showTab(t){
+  ['dashboard','clientes','os','usuarios'].forEach((tab,i)=>{ document.querySelectorAll('.tab')[i]?.classList.toggle('active',tab===t); const s=document.getElementById('tab-'+tab); if(s) s.classList.toggle('active',tab===t); });
+  if(t==='dashboard') renderDashboard();
+  if(t==='clientes') renderClientes();
+  if(t==='os') renderOS();
+  if(t==='usuarios') renderUsuarios();
+}
+function handleFiles(e){
+  Array.from(e.target.files).forEach(f=>{ const r=new FileReader(); r.onload=ev=>{ pendingFiles.push({name:f.name,type:f.type,data:ev.target.result}); renderFileList(); }; r.readAsDataURL(f); }); e.target.value='';
+}
+function renderFileList(){
+  document.getElementById('file-list').innerHTML=pendingFiles.map((f,i)=>`<div class="file-item">${f.type.startsWith('image/')?`<img src="${f.data}" class="file-thumb">`:`<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:#e8f0fe;border-radius:4px;"><i class="ti ti-file-type-pdf" style="font-size:18px;color:#1a56db;"></i></div>`}<span class="fi-name">${f.name}</span><button class="btn-sm btn-danger" onclick="pendingFiles.splice(${i},1);renderFileList()">×</button></div>`).join('');
+}
+function viewAnexo(f){
+  document.getElementById('anexo-title').textContent=f.name;
+  const img=document.getElementById('anexo-img'),msg=document.getElementById('anexo-pdf-msg'),dl=document.getElementById('anexo-dl');
+  dl.href=f.data; dl.download=f.name;
+  if(f.type&&f.type.startsWith('image/')){ img.src=f.data; img.style.display='block'; msg.style.display='none'; } else { img.style.display='none'; msg.style.display='block'; }
+  openModal('modal-anexo');
+}
+async function salvarCliente(){
+  const nome=v('c-nome').trim(); if(!nome){ alert('Informe o nome.'); return; }
+  const obj={nome,contato:v('c-contato'),tel:v('c-tel'),email:v('c-email'),cidade:v('c-cidade'),doc:v('c-doc'),obs:v('c-obs')};
+  setSyncBar('Salvando...', true);
+  try {
+    if(editClienteId){ await sbPatch(`clientes?id=eq.${editClienteId}`,obj); Object.assign(clientes.find(c=>c.id===editClienteId),obj); }
+    else { const r=await sbPost('clientes',obj); clientes.push(r[0]); }
+    closeModal('modal-cliente'); renderClientes(); toast('Cliente salvo ✓');
+  } catch(e){ alert('Erro: '+e.message); }
+  setSyncBar('');
+}
+function editCliente(id){
+  const c=clientes.find(x=>x.id===id); editClienteId=id;
+  ['nome','contato','tel','email','cidade','doc','obs'].forEach(k=>{ const el=document.getElementById('c-'+k); if(el) el.value=c[k]||''; });
+  document.getElementById('mc-title').textContent='Editar cliente'; openModal('modal-cliente');
+}
+async function deleteCliente(id){ if(!confirm('Remover cliente?')) return; await sbDel(`clientes?id=eq.${id}`); clientes=clientes.filter(c=>c.id!==id); renderClientes(); toast('Removido'); }
+function renderClientes(){
+  const q=v('busca-cliente').toLowerCase();
+  const list=clientes.filter(c=>c.nome.toLowerCase().includes(q)||(c.cidade||'').toLowerCase().includes(q));
+  const tb=document.getElementById('tabela-clientes');
+  if(!list.length){ tb.innerHTML='<tr><td colspan="5" class="empty">Nenhum cliente encontrado.</td></tr>'; return; }
+  tb.innerHTML=list.map(c=>{ const n=ordens.filter(o=>o.cliente_id===c.id).length; return `<tr><td><strong>${c.nome}</strong>${c.contato?`<br><small style="color:#888">${c.contato}</small>`:''}</td><td>${c.tel||'—'}</td><td>${c.cidade||'—'}</td><td>${n}</td><td><div class="actions"><button class="btn-sm" onclick="editCliente('${c.id}')"><i class="ti ti-edit"></i></button><button class="btn-sm btn-danger" onclick="deleteCliente('${c.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`; }).join('');
+}
+function abrirNovaOS(){
+  const sel=document.getElementById('os-cliente'); sel.innerHTML='<option value="">Selecione...</option>';
+  clientes.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.nome; sel.appendChild(o); });
+  document.getElementById('os-data').value=new Date().toISOString().split('T')[0];
+  openModal('modal-os');
+}
+async function salvarOS(){
+  const clienteId=v('os-cliente'),desc=v('os-desc').trim(),data=v('os-data');
+  if(!clienteId||!desc||!data){ alert('Preencha cliente, data e descrição.'); return; }
+  const cliente=clientes.find(c=>c.id===clienteId);
+  const maxNum=ordens.length?Math.max(...ordens.map(o=>o.num||0)):1000;
+  const obj={num:editOsId?ordens.find(o=>o.id===editOsId).num:maxNum+1,cliente_id:clienteId,cliente_nome:cliente.nome,data,descricao:desc,material:v('os-material'),espessura:v('os-esp'),quantidade:v('os-qtd'),valor:parseFloat(v('os-valor'))||0,status:v('os-status'),obs:v('os-obs'),criado_por:currentUser.nome};
+  if(pendingFiles.length){ const ex=editOsId?(ordens.find(o=>o.id===editOsId).anexos||[]):[] ; obj.anexos=[...ex,...pendingFiles]; }
+  document.getElementById('btn-salvar-os').innerHTML='<span class="spinner"></span>Salvando...';
+  setSyncBar('Salvando...', true);
+  try {
+    if(editOsId){ await sbPatch(`ordens?id=eq.${editOsId}`,obj); Object.assign(ordens.find(o=>o.id===editOsId),obj); }
+    else { const r=await sbPost('ordens',obj); ordens.unshift(r[0]); }
+    closeModal('modal-os'); renderOS(); renderDashboard(); toast('OS salva ✓');
+  } catch(e){ alert('Erro: '+e.message); }
+  document.getElementById('btn-salvar-os').textContent='Salvar OS'; setSyncBar('');
+}
+function editOS(id){
+  const o=ordens.find(x=>x.id===id); editOsId=id; pendingFiles=[];
+  const sel=document.getElementById('os-cliente'); sel.innerHTML='<option value="">Selecione...</option>';
+  clientes.forEach(c=>{ const opt=document.createElement('option'); opt.value=c.id; opt.textContent=c.nome; sel.appendChild(opt); });
+  sel.value=o.cliente_id;
+  document.getElementById('os-data').value=o.data||''; document.getElementById('os-desc').value=o.descricao||'';
+  document.getElementById('os-material').value=o.material||''; document.getElementById('os-esp').value=o.espessura||'';
+  document.getElementById('os-qtd').value=o.quantidade||''; document.getElementById('os-valor').value=o.valor||'';
+  document.getElementById('os-status').value=o.status||'Pendente'; document.getElementById('os-obs').value=o.obs||'';
+  document.getElementById('file-list').innerHTML=''; document.getElementById('mos-title').textContent='Editar OS #'+o.num;
+  openModal('modal-os');
+}
+async function deleteOS(id){ if(!confirm('Remover OS?')) return; await sbDel(`ordens?id=eq.${id}`); ordens=ordens.filter(o=>o.id!==id); renderOS(); renderDashboard(); toast('Removida'); }
+function renderOS(){
+  const q=v('busca-os').toLowerCase(),fs=v('filtro-status');
+  const list=ordens.filter(o=>{ const mb=(o.cliente_nome||'').toLowerCase().includes(q)||(o.descricao||'').toLowerCase().includes(q)||String(o.num).includes(q); return mb&&(!fs||o.status===fs); });
+  const tb=document.getElementById('tabela-os');
+  if(!list.length){ tb.innerHTML='<tr><td colspan="8" class="empty">Nenhuma ordem encontrada.</td></tr>'; return; }
+  tb.innerHTML=list.map(o=>{ const anx=Array.isArray(o.anexos)?o.anexos:[]; const thumbs=anx.slice(0,3).map(f=>f.type&&f.type.startsWith('image/')?`<div class="anexo-thumb" onclick='viewAnexo(${JSON.stringify(f).replace(/'/g,"&#39;")})'><img src="${f.data}" alt="${f.name}"></div>`:`<div class="anexo-pdf" onclick='viewAnexo(${JSON.stringify(f).replace(/'/g,"&#39;")})'><i class="ti ti-file-type-pdf" style="font-size:18px;"></i><span>PDF</span></div>`).join(''); const extra=anx.length>3?`<small style="color:#888">+${anx.length-3}</small>`:''; return `<tr><td><strong>#${o.num}</strong></td><td>${o.cliente_nome||'—'}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.descricao||'—'}</td><td>${o.data?o.data.split('-').reverse().join('/'):'—'}</td><td>${o.valor?'R$ '+Number(o.valor).toLocaleString('pt-BR',{minimumFractionDigits:2}):'—'}</td><td><div class="anexos-grid">${thumbs}${extra}${!anx.length?'<span style="font-size:12px;color:#888">—</span>':''}</div></td><td><span class="${badgeClass(o.status)}">${o.status}</span></td><td><div class="actions"><button class="btn-sm" onclick="editOS('${o.id}')"><i class="ti ti-edit"></i></button><button class="btn-sm btn-danger" onclick="deleteOS('${o.id}')"><i class="ti ti-trash"></i></button></div></td></tr>`; }).join('');
+}
+async function salvarUsuario(){
+  const nome=v('u-nome').trim(),user=v('u-user').trim().toLowerCase(),pass=v('u-pass'),role=v('u-role');
+  const err=document.getElementById('u-err');
+  if(!nome||!user||!pass){ err.textContent='Preencha todos os campos.'; err.classList.remove('hide'); return; }
+  if(!editUserId&&usuarios.find(u=>u.user_login===user)){ err.textContent='Usuário já existe.'; err.classList.remove('hide'); return; }
+  err.classList.add('hide');
+  try {
+    if(editUserId){ await sbPatch(`usuarios?id=eq.${editUserId}`,{nome,user_login:user,senha:pass,role}); Object.assign(usuarios.find(u=>u.id===editUserId),{nome,user_login:user,senha:pass,role}); }
+    else { const r=await sbPost('usuarios',{nome,user_login:user,senha:pass,role}); usuarios.push(r[0]); }
+    closeModal('modal-usuario'); renderUsuarios(); toast('Usuário salvo ✓');
+  } catch(e){ err.textContent='Erro: '+e.message; err.classList.remove('hide'); }
+}
+function editUsuario(id){
+  const u=usuarios.find(x=>x.id===id); editUserId=id;
+  document.getElementById('u-nome').value=u.nome||''; document.getElementById('u-user').value=u.user_login||'';
+  document.getElementById('u-pass').value=u.senha||''; document.getElementById('u-role').value=u.role||'operador';
+  document.getElementById('mu-title').textContent='Editar usuário'; openModal('modal-usuario');
+}
+async function deleteUsuario(id){ const u=usuarios.find(x=>x.id===id); if(u&&u.user_login==='admin'){ alert('Não é possível remover o admin principal.'); return; } if(!confirm('Remover usuário?')) return; await sbDel(`usuarios?id=eq.${id}`); usuarios=usuarios.filter(u=>u.id!==id); renderUsuarios(); toast('Removido'); }
+function renderUsuarios(){
+  const tb=document.getElementById('tabela-usuarios');
+  if(!usuarios.length){ tb.innerHTML='<tr><td colspan="4" class="empty">Nenhum usuário.</td></tr>'; return; }
+  tb.innerHTML=usuarios.map(u=>`<tr><td><strong>${u.user_login}</strong></td><td>${u.nome}</td><td><span class="badge ${u.role==='admin'?'role-admin':'role-operador'}">${u.role==='admin'?'Administrador':'Operador'}</span></td><td><div class="actions"><button class="btn-sm" onclick="editUsuario('${u.id}')"><i class="ti ti-edit"></i></button>${u.user_login!=='admin'?`<button class="btn-sm btn-danger" onclick="deleteUsuario('${u.id}')"><i class="ti ti-trash"></i></button>`:''}</div></td></tr>`).join('');
+}
+function renderDashboard(){
+  const total=ordens.length,pend=ordens.filter(o=>o.status==='Pendente').length,and=ordens.filter(o=>o.status==='Em andamento').length;
+  const fat=ordens.filter(o=>o.status==='Concluída').reduce((s,o)=>s+Number(o.valor||0),0);
+  document.getElementById('stats-cards').innerHTML=`<div class="stat"><div class="stat-label">Total de OS</div><div class="stat-value">${total}</div></div><div class="stat"><div class="stat-label">Pendentes</div><div class="stat-value">${pend}</div></div><div class="stat"><div class="stat-label">Em andamento</div><div class="stat-value">${and}</div></div><div class="stat"><div class="stat-label">Faturado</div><div class="stat-value" style="font-size:18px;">R$ ${fat.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div></div>`;
+  const rec=ordens.slice(0,5);
+  document.getElementById('dashboard-table').innerHTML=rec.length?rec.map(o=>`<tr><td>#${o.num}</td><td>${o.cliente_nome||'—'}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.descricao||'—'}</td><td>${o.data?o.data.split('-').reverse().join('/'):'—'}</td><td><span class="${badgeClass(o.status)}">${o.status}</span></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhuma ordem criada.</td></tr>';
+}
+</script>
+</body>
+</html>
